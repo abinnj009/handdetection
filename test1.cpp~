@@ -9,7 +9,6 @@ int x=0,y=0,temp_x,temp_y,flag=0,thumbfing_x,thumbfing_y,middlefing_x,middlefing
 int bio1;//wrist length
 int bio2;//reference point to middle finger top length
 int ref_x,ref_y;//reference points of hand	
-
 int main( int argc, char** argv )
 {	
     if( argc != 2)
