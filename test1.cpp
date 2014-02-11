@@ -8,12 +8,13 @@ using namespace std;
 int x=0,y=0,temp_x,temp_y,flag=0,thumbfing_x,thumbfing_y,middlefing_x,middlefing_y,smallfing_x,smallfing_y;
 int indexfing_x,indexfing_y,ringfing_x,ringfing_y;
 int dis;
+int dis_new;
 int bio1;//wrist length
 int bio2;//reference point to middle finger top length
 int ref_x,ref_y;//reference points of hand
 int a,a1,a2,a3,ref;//areas of triangles for valley point calculation 	
 int v1_x,v1_y,v2_x,v2_y,v3_x,v3_y,v4_x,v4_y,v5_x,v5_y;//valley points
-int e1_x,e1_y;//left side end points of hand
+int e1_x,e1_y,e2_x,e2_y; //left side end points of hand
 int main( int argc, char** argv )
 {	
     if( argc != 2)
@@ -24,7 +25,7 @@ int main( int argc, char** argv )
 
     Mat image,image1;
     image1 = imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE);   // Read the file as greyscale
-    threshold(image1,image, 100, 255, CV_THRESH_BINARY); //converted to binary
+    threshold(image1,image, 60, 255, CV_THRESH_BINARY); //converted to binary
 
 Scalar color;
 
@@ -55,11 +56,11 @@ for(x=temp_x;x<599;x++)
 	if(color.val[0]<90)
 	{	bio1=x-temp_x;
 		ref_x=x-(x-temp_x)/2;
-		
 		ref_y=y;
 		break;
 	}
 }
+e2_x=x;e2_y=y;
 cout<<"reference point(x,y)"<<ref_x<<ref_y<<"val:" <<color.val[0]<<endl;
 //hand middle finger top detection
 x=0;y=0;
@@ -175,79 +176,138 @@ cout<<"ring finger top:"<<temp_x<<temp_y<<endl;
 ringfing_x=temp_x;
 ringfing_y=temp_y;
 
-			/*	VALLEY POINT DETECTION*/
+                   		/*	VALLEY POINT DETECTION*/
 			
 			
 			
 //first valley point from left(small fing)
-ref=300;
-a=(((smallfing_y*(ringfing_x-ref_x))+(ringfing_y*(ref_x-smallfing_x))+(ref_y*(smallfing_x-ringfing_x)))/2);
-for(y=0;y<ref;y++)
+
+dis_new=445;
+a=abs(((smallfing_x*(ringfing_y-ref_y))+(ringfing_x*(ref_y-smallfing_y))+(ref_x*(smallfing_y-ringfing_y)))/2);
+
+for(y=447;y>0;y--)
 {
-	for(x=0;x<300;x++)
+	for(x=0;x<567;x++)
 	{
-		a1=(((y*(ringfing_x-ref_x))+(ringfing_y*(ref_x-x))+(ref_y*(x-ringfing_x)))/2);
-      		a2=(((smallfing_y*(x-ref_x))+(y*(ref_x-smallfing_x))+(ref_y*(smallfing_x-x)))/2);
-           	a3=(((smallfing_y*(ringfing_x-x))+(ringfing_y*(x-smallfing_x))+(y*(smallfing_x-ringfing_x)))/2);
+		a1=abs((smallfing_x*(ringfing_y-y)+x*(smallfing_y-ringfing_y)+ringfing_x*(y-smallfing_y))/2);
+		
+      		a2=abs((smallfing_x*(y-ref_y)+x*(ref_y-smallfing_y)+ref_x*(smallfing_y-y))/2);
+      		
+           	a3=abs((ringfing_x*(ref_y-y)+ref_x*(y-ringfing_y)+x*(ringfing_y-ref_y))/2);
+           	
            	if(a==(a1+a2+a3))
            	{	
-           		color=image.at<uchar>(Point(y,x));
-              		dis=sqrt((y-ref_y)^2+(x-ref_x)^2);
-               		if(dis<ref&&color.val[0]==0)
+           // 	cout<<"a1:"<<a1<<endl;
+           //	cout<<"a2:"<<a2<<endl;
+           //	cout<<"a3:"<<a3<<endl;
+         		dis=sqrt((x-ref_x)^2+(y-ref_y)^2);
+           		color=image.at<uchar>(Point(x,y));
+           		
+              		
+               		if(dis<dis_new&&color.val[0]==0)
                		{
-                   		v1_x=x;v1_y=y;ref=dis;//valley point 1
+               		
+               		//cout<<"dis"<<dis<<endl;
+               			
+                   			v1_x=x;v1_y=y;
+                   			dis_new=dis;
+                   			
+                   			
+                   			
                    	}
                  }
 	}
 }
-cout<<"Valley point 1:"<<v1_x<<","<<v1_y<<dis<<endl;
+
+cout<<"first valley point("<<v1_x<<","<<v1_y<<")"<<endl;
+cout<<"ref point("<<ref_x<<","<<ref_y<<")"<<endl;
+
 //second valley point 
 
-ref=243;
-ringfing_y=1;ringfing_x=1;  
-a=(((ringfing_y*(middlefing_x-ref_x))+(middlefing_y*(ref_x-ringfing_x))+(ref_y*(ringfing_x-middlefing_x)))/2);
- for(y=0;y<ref;y++)
- {
-       for(x=0;x<205;x++)
-       {
-           a1=(((x*(middlefing_x-ref_x))+(middlefing_y*(ref_x-y))+(ref_y*(y-middlefing_x)))/2);
-           a2=(((ringfing_y*(y-ref_x))+(x*(ref_x-ringfing_x))+(ref_y*(ringfing_x-y)))/2);
-           a3=(((ringfing_y*(middlefing_x-y))+(middlefing_y*(y-ringfing_x))+(x*(ringfing_x-middlefing_x)))/2);
-           if(a==(a1+a2+a3))
-           {
-              dis=sqrt((x-ref_y)^2+(y-ref_x)^2);
-              color=image.at<uchar>(Point(x,y));
-               if((dis<ref&&color.val[0])==0)
-               {
-                   v2_x=x;v2_y=y;ref=dis;//valley point 2
-               }
-            }
-        }
- }   
+dis_new=445;
+a=abs(((ringfing_x*(middlefing_y-ref_y))+(middlefing_x*(ref_y-ringfing_y))+(ref_x*(ringfing_y-middlefing_y)))/2);
+
+for(y=447;y>0;y--)
+{
+	for(x=0;x<567;x++)
+	{
+		a1=abs((ringfing_x*(middlefing_y-y)+x*(ringfing_y-middlefing_y)+middlefing_x*(y-ringfing_y))/2);
+		
+      		a2=abs((ringfing_x*(y-ref_y)+x*(ref_y-ringfing_y)+ref_x*(ringfing_y-y))/2);
+      		
+           	a3=abs((middlefing_x*(ref_y-y)+ref_x*(y-middlefing_y)+x*(middlefing_y-ref_y))/2);
+           	
+           	if(a==(a1+a2+a3))
+           	{	
+           // 	cout<<"a1:"<<a1<<endl;
+           //	cout<<"a2:"<<a2<<endl;
+           //	cout<<"a3:"<<a3<<endl;
+         		dis=sqrt((x-ref_x)^2+(y-ref_y)^2);
+           		color=image.at<uchar>(Point(x,y));
+           		
+              		
+               		if(dis<dis_new&&color.val[0]==0)
+               		{
+               		
+               		//cout<<"dis"<<dis<<endl;
+               			
+                   			v2_x=x;v2_y=y;
+                   			dis_new=dis;
+                   			
+                   			
+                   			
+                   	}
+                 }
+	}
+}
+
+cout<<"second valley point("<<v2_x<<","<<v2_y<<")"<<endl;
+cout<<"ref point("<<ref_x<<","<<ref_y<<")"<<endl;   
  
  
  //third valley point
  
- ref=243;
-     middlefing_y=1;middlefing_x=1;  
-      a=(((middlefing_y*(indexfing_x-ref_x))+(indexfing_y*(ref_x-middlefing_x))+(ref_y*(middlefing_x-indexfing_x)))/2);
-    for(y=0;y<ref;y++)
-    {
-    	for(x=0;x<205;x++)
-    	{
-        	a1=(((x*(indexfing_x-ref_x))+(indexfing_y*(ref_x-y))+(ref_y*(y-indexfing_x)))/2);
-        	a2=(((middlefing_y*(y-ref_x))+(x*(ref_x-middlefing_x))+(ref_y*(middlefing_x-y)))/2);
-        	a3=(((middlefing_y*(indexfing_x-y))+(indexfing_y*(y-middlefing_x))+(x*(middlefing_x-indexfing_x)))/2);
-        	if(a==(a1+a2+a3))
-        	{
-        		dis=sqrt((x-ref_y)^2+(y-ref_x)^2);
-        		color=image.at<uchar>(Point(x,y));
-               		if((dis<ref&&color.val[0])==0)
-                   		v3_x=x;v3_y=y;ref=dis;//valley point 3
+ dis_new=445;
+a=abs(((ringfing_x*(middlefing_y-ref_y))+(middlefing_x*(ref_y-ringfing_y))+(ref_x*(ringfing_y-middlefing_y)))/2);
+
+for(y=447;y>0;y--)
+{
+	for(x=0;x<567;x++)
+	{
+		a1=abs((ringfing_x*(middlefing_y-y)+x*(ringfing_y-middlefing_y)+middlefing_x*(y-ringfing_y))/2);
+		
+      		a2=abs((ringfing_x*(y-ref_y)+x*(ref_y-ringfing_y)+ref_x*(ringfing_y-y))/2);
+      		
+           	a3=abs((middlefing_x*(ref_y-y)+ref_x*(y-middlefing_y)+x*(middlefing_y-ref_y))/2);
+           	
+           	if(a==(a1+a2+a3))
+           	{	
+           // 	cout<<"a1:"<<a1<<endl;
+           //	cout<<"a2:"<<a2<<endl;
+           //	cout<<"a3:"<<a3<<endl;
+         		dis=sqrt((x-ref_x)^2+(y-ref_y)^2);
+           		color=image.at<uchar>(Point(x,y));
+           		
+              		
+               		if(dis<dis_new&&color.val[0]==0)
+               		{
+               		
+               		//cout<<"dis"<<dis<<endl;
+               			
+                   			v2_x=x;v2_y=y;
+                   			dis_new=dis;
+                   			
+                   			
+                   			
+                   	}
                  }
-         }
-     }
-     
+	}
+}
+
+cout<<"second valley point("<<v2_x<<","<<v2_y<<")"<<endl;
+cout<<"ref point("<<ref_x<<","<<ref_y<<")"<<endl;  
+
+
  
  //fourth valley point
  
@@ -281,3 +341,4 @@ a=(((ringfing_y*(middlefing_x-ref_x))+(middlefing_y*(ref_x-ringfing_x))+(ref_y*(
     waitKey(0);                                          // Wait for a keystroke in the window
     return 0;
 }
+
