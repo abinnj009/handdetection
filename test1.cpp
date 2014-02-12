@@ -48,8 +48,9 @@ for(x=0;x<599;x++)
 		goto hand_end_detect;
 	}
 }
-e1_x=x;e1_y=y;
+
 hand_end_detect:
+e1_x=x;e1_y=y;//hand starting points
 for(x=temp_x;x<599;x++)
 {
 	color=image.at<uchar>(Point(x,y));
@@ -60,7 +61,7 @@ for(x=temp_x;x<599;x++)
 		break;
 	}
 }
-e2_x=x;e2_y=y;
+e2_x=x;e2_y=y;//hand end points
 cout<<"reference point(x,y)"<<ref_x<<ref_y<<"val:" <<color.val[0]<<endl;
 //hand middle finger top detection
 x=0;y=0;
@@ -266,19 +267,18 @@ cout<<"ref point("<<ref_x<<","<<ref_y<<")"<<endl;
  
  
  //third valley point
- 
  dis_new=445;
-a=abs(((ringfing_x*(middlefing_y-ref_y))+(middlefing_x*(ref_y-ringfing_y))+(ref_x*(ringfing_y-middlefing_y)))/2);
+a=abs(((middlefing_x*(indexfing_y-ref_y))+(indexfing_x*(ref_y-middlefing_y))+(ref_x*(middlefing_y-indexfing_y)))/2);
 
 for(y=447;y>0;y--)
 {
 	for(x=0;x<567;x++)
 	{
-		a1=abs((ringfing_x*(middlefing_y-y)+x*(ringfing_y-middlefing_y)+middlefing_x*(y-ringfing_y))/2);
+		a1=abs((middlefing_x*(indexfing_y-y)+x*(middlefing_y-indexfing_y)+indexfing_x*(y-middlefing_y))/2);
 		
-      		a2=abs((ringfing_x*(y-ref_y)+x*(ref_y-ringfing_y)+ref_x*(ringfing_y-y))/2);
+      		a2=abs((middlefing_x*(y-ref_y)+x*(ref_y-middlefing_y)+ref_x*(middlefing_y-y))/2);
       		
-           	a3=abs((middlefing_x*(ref_y-y)+ref_x*(y-middlefing_y)+x*(middlefing_y-ref_y))/2);
+           	a3=abs((indexfing_x*(ref_y-y)+ref_x*(y-indexfing_y)+x*(indexfing_y-ref_y))/2);
            	
            	if(a==(a1+a2+a3))
            	{	
@@ -294,7 +294,7 @@ for(y=447;y>0;y--)
                		
                		//cout<<"dis"<<dis<<endl;
                			
-                   			v2_x=x;v2_y=y;
+                   			v3_x=x;v3_y=y;
                    			dis_new=dis;
                    			
                    			
@@ -304,34 +304,53 @@ for(y=447;y>0;y--)
 	}
 }
 
-cout<<"second valley point("<<v2_x<<","<<v2_y<<")"<<endl;
-cout<<"ref point("<<ref_x<<","<<ref_y<<")"<<endl;  
+cout<<"Third valley point("<<v3_x<<","<<v3_y<<")"<<endl;
+cout<<"ref point("<<ref_x<<","<<ref_y<<")"<<endl;
 
 
  
  //fourth valley point
  
- ref=243;
-     thumbfing_y=1;thumbfing_x=1;  
-      a=(((v3_x*(thumbfing_x-e1_y))+(thumbfing_y*(e1_y-v3_y))+(e1_x*(v3_y-thumbfing_x)))/2);
-    for(y=0;y<ref;y++)
-    {
-       for(x=0;x<205;x++)
-       {
-           a1=(((x*(thumbfing_x-e1_y))+(thumbfing_y*(e1_y-y))+(e1_x*(y-thumbfing_x)))/2);
-           a2=(((v3_x*(y-e1_y))+(x*(e1_y-v3_y))+(e1_x*(v3_y-y)))/2);
-           a3=(((v3_x*(thumbfing_x-y))+(thumbfing_y*(y-v3_y))+(x*(v3_y-thumbfing_x)))/2);
-           if(a==(a1+a2+a3))
-           {
-              dis=sqrt((x-e1_x)^2+(y-e1_y)^2);
-              color=image.at<uchar>(Point(x,y));
-               if(dis<ref&&color.val[0]==0)
-               {
-                   v5_x=x;v5_y=y;ref=dis;
-               }
-            }
-        }
-     }
+
+dis_new=445;
+a=abs(((indexfing_x*(thumbfing_y-e1_y))+(thumbfing_x*(e1_y-indexfing_y))+(e1_x*(indexfing_y-thumbfing_y)))/2);
+
+for(y=447;y>0;y--)
+{
+	for(x=0;x<567;x++)
+	{
+		a1=abs((indexfing_x*(thumbfing_y-y)+x*(indexfing_y-thumbfing_y)+thumbfing_x*(y-indexfing_y))/2);
+		
+      		a2=abs((indexfing_x*(y-e1_y)+x*(e1_y-indexfing_y)+e1_x*(indexfing_y-y))/2);
+      		
+           	a3=abs((thumbfing_x*(e1_y-y)+e1_x*(y-thumbfing_y)+x*(thumbfing_y-e1_y))/2);
+           	
+           	if(a==(a1+a2+a3))
+           	{	
+           // 	cout<<"a1:"<<a1<<endl;
+           //	cout<<"a2:"<<a2<<endl;
+           //	cout<<"a3:"<<a3<<endl;
+         		dis=sqrt((x-e1_x)^2+(y-e1_y)^2);
+           		color=image.at<uchar>(Point(x,y));
+           		
+              		
+               		if(dis<dis_new&&color.val[0]==0)
+               		{
+               		
+               		//cout<<"dis"<<dis<<endl;
+               			
+                   			v4_x=x;v4_y=y;
+                   			dis_new=dis;
+                   			
+                   			
+                   			
+                   	}
+                 }
+	}
+}
+
+cout<<"Fourth valley point("<<v4_x<<","<<v4_y<<")"<<endl;
+cout<<"ref point("<<e1_x<<","<<e1_y<<")"<<endl;
 //Window display
     namedWindow( "Display window", WINDOW_AUTOSIZE );// Create a window for display.
 
