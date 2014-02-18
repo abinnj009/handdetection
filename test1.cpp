@@ -7,6 +7,7 @@ using namespace cv;
 using namespace std;
 int x=0,y=0,temp_x,temp_y,flag=0,thumbfing_x,thumbfing_y,middlefing_x,middlefing_y,smallfing_x,smallfing_y;
 int indexfing_x,indexfing_y,ringfing_x,ringfing_y;
+int smallfing_width,ringfing_width,middlefing_width,indexfing_width,thumbfing_width,left_end;
 int dis;
 int dis_new;
 int bio1;//wrist length
@@ -351,6 +352,106 @@ for(y=447;y>0;y--)
 
 cout<<"Fourth valley point("<<v4_x<<","<<v4_y<<")"<<endl;
 cout<<"ref point("<<e1_x<<","<<e1_y<<")"<<endl;
+
+
+
+                                            /* FINGER WIDTH DETECTION*/
+
+
+//smallfinger width
+smallfing_width=0;
+y=v1_y-10;
+x=v1_x-20;
+cout<<x<<y<<endl;
+for(x;x>0;x--)
+{
+    color=image.at<uchar>(Point(x,y));
+    if(color.val[0]!=255)
+    {
+        break;
+    }
+}
+left_end=x;
+//cout<<left_end<<y<<endl;
+y=v1_y-10;
+x=v1_x-20;
+for(x;x<567;x++)
+{
+    color=image.at<uchar>(Point(x,y));
+    if(color.val[0]==0)
+    {
+        break;
+    }
+}
+smallfing_width=x-left_end;
+cout<<smallfing_width<<endl;
+
+
+//ring finger width
+ringfing_width=0;
+y=v2_y-10;
+x=v2_x-20;
+
+for(x;x>0;x--)
+{
+    color=image.at<uchar>(Point(x,y));
+    if(color.val[0]!=255)
+    {
+        break;
+    }
+}
+left_end=x;
+cout<<left_end<<y<<endl;
+y=v2_y-10;
+x=v2_x-20;
+for(x;x<567;x++)
+{
+    color=image.at<uchar>(Point(x,y));
+    if(color.val[0]==0)
+    {
+        break;
+    }
+}
+//cout<<x<<y<<endl;
+ringfing_width=x-left_end;
+cout<<ringfing_width<<endl;
+
+
+//middle finger width
+middlefing_width=0;
+y=v3_y-10;
+x=v3_x-20;
+
+for(x;x>0;x--)
+{
+    color=image.at<uchar>(Point(x,y));
+    if(color.val[0]!=255)
+    {
+        break;
+    }
+}
+left_end=x;
+cout<<left_end<<y<<endl;
+y=v3_y-10;
+x=v3_x-20;
+for(x;x<567;x++)
+{
+    color=image.at<uchar>(Point(x,y));
+    if(color.val[0]==0)
+    {
+        break;
+    }
+}
+//cout<<x<<y<<endl;
+middlefing_width=x-left_end;
+cout<<middlefing_width<<endl;
+
+
+
+
+
+
+
 //Window display
     namedWindow( "Display window", WINDOW_AUTOSIZE );// Create a window for display.
 
