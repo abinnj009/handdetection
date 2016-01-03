@@ -6,17 +6,8 @@
 */
 using namespace cv;
 using namespace std;
-int x=0,y=0,temp_x,temp_y,flag=0,thumbfing_x,thumbfing_y,middlefing_x,middlefing_y,smallfing_x,smallfing_y;
-int indexfing_x,indexfing_y,ringfing_x,ringfing_y;
-int smallfing_width,ringfing_width,middlefing_width,indexfing_width,thumbfing_width,left_end;
-int dis;
-int dis_new,smallfing_width_1,ringfing_width_1,middlefing_width_1,palm_width;
-int bio1;//wrist length
-int bio2;//reference point to middle finger top length
-int ref_x,ref_y,ymax;//reference points of hand
-int a,a1,a2,a3,ref;//areas of triangles for valley point calculation
-int v1_x,v1_y,v2_x,v2_y,v3_x,v3_y,v4_x,v4_y,v5_x,v5_y;//valley points
-int e1_x,e1_y,e2_x,e2_y; //left side end points of hand
+int x=0,y=0,temp_x,temp_y;
+
 int main( int argc, char** argv )
 {	
     if( argc != 2)
@@ -31,42 +22,69 @@ int main( int argc, char** argv )
 
 Scalar color;
 
-
-
     if(! image.data ) // Check for invalid input
     {
         cout << "Could not open or find the image" << std::endl ;
         return -1;
     }
     
-/*    x=2;y=440;//y is the approximate y resolution of input pic
-for(x=0;x<599;x++)
+x=2;y=440;//y is the approximate y resolution of input pic
+
+for(x;x<599;x++)
 {
 	color= image.at<uchar>(Point(x,y));
 
 	if(color.val[0]>90)
 	{
 		temp_x=x;
-		goto hand_end_detect;
+		goto first_leaf_start;
 	}
 }
 
-hand_end_detect:
-e1_x=x;e1_y=y;//hand starting points
+first_leaf_start:
+e1_x=x;e1_y=y;//first leaf starting points
 for(x=temp_x;x<599;x++)
 {
 	color=image.at<uchar>(Point(x,y));
-	if(color.val[0]<90)
+	if(color.val[0]<90) //first leaf ends
 	{	
-		bio1=x-temp_x;
-		ref_x=x-(x-temp_x)/2;
-		ref_y=y;
+		leaf1_width = x - e1_x;
 		break;
 	}
 }
-e2_x=x;e2_y=y;//hand end points
-cout<<"reference point(x,y)"<<ref_x<<ref_y<<"val:" <<color.val[0]<<endl;
-*/
+
+cout<<"first leaf width:"<<leaf1_width<<endl;
+//calculation of second leaf start
+e2_x = x+10;
+for(x=e2_x;x<599;x++)
+{
+	color=image.at<uchar>(Point(x,y));
+	if(color.val[0]>90) //second leaf start
+	{	
+		leaf2_start = x ;
+		break;
+	}
+}
+//calculating second leaf end
+for(x = leaf2_start +1; x < 599; x++)
+{
+	color = image.at<uchar>(Point(x,y));
+	if(color.val[0]<90)//second leaf end
+	{
+		leaf2_width = x - leaf2_start;
+		break;
+	}
+}
+if(leaf1_width > 90) //leaf1 is the target 
+{
+	cout<<"Cut down leaf 1"<<endl;
+}
+if(leaf2_width > 90) //leaf2 is the target
+{
+
+	cout<<"Cut down leaf 2"<<endl;
+}
+
 //Window display
     namedWindow( "Display window", WINDOW_AUTOSIZE );// Create a window for display.
 
