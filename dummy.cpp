@@ -11,8 +11,11 @@ main( int argc, char** argv )
 {	
 
 	Mat image,image1;
-	image1 = imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE); // Read the file as greyscale
-	threshold(image1,image, 150, 255, CV_THRESH_BINARY); //converted to binary
+	VideoCapture cap(0); // open the default camera
+    	if(!cap.isOpened())  // check if we succeeded
+        	return -1;
+	 cap >> image1; // get a new frame from camera to image1
+	threshold(image1,image, 60, 255, CV_THRESH_BINARY); //converted to binary
 
 	Scalar color;
 
