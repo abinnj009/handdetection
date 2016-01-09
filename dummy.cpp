@@ -51,35 +51,10 @@ first_leaf_start:
 	}
 
 	cout<<"first leaf width:"<<leaf1_width<<endl;
-	//calculation of second leaf start
-	e2_x = x+10;
-	for(x=e2_x;x<599;x++)
-	{
-		color=image.at<uchar>(Point(x,y));
-		if(color.val[0]>90) //second leaf start
-		{	
-			leaf2_start = x ;
-			break;
-		}
-	}
-	//calculating second leaf end
-	for(x = leaf2_start +1; x < 599; x++)
-	{
-		color = image.at<uchar>(Point(x,y));
-		if(color.val[0]<90)//second leaf end
-		{
-			leaf2_width = x - leaf2_start;
-			break;
-		}
-	}
+	
 	if(leaf1_width > 90) //leaf1 is the target 
 	{
 		cout<<"Cut down leaf 1"<<endl;
-	}
-	if(leaf2_width > 90) //leaf2 is the target
-	{
-
-		cout<<"Cut down leaf 2"<<endl;
 	}
 
 //Window display
